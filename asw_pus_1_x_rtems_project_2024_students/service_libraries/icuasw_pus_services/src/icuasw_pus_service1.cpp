@@ -82,18 +82,18 @@ void PUSService1::TryTCAcceptation(CDTCHandler &tcHandler) {
 		uint8_t subtype = tcHandler.GetSubType();
 
 		switch (type) {
-		//TODO TC Acceptance and TC Classification
-//		case (9):
-//
-//			switch (subtype) {
-//
-//			case (129):
-//				tcHandler.SetExecCtrlAsPrioTC();
-//				break;
-//			default:
-//				acceptationStatus = TCAcceptationSubTypeError;
-//			}
-//			break;
+		//TODO TC Acceptance and TC Classification Fixed
+		case (9):
+
+			switch (subtype) {
+
+			case (129):
+				tcHandler.SetExecCtrlAsPrioTC();
+				break;
+			default:
+				acceptationStatus = TCAcceptationSubTypeError;
+			}
+			break;
 		case (17):
 			switch (subtype) {
 			case (1):

@@ -70,8 +70,8 @@ void EmuGSS_SendProgrammedTCs() {
 
 		printf("\n");
 
-//TODO Signal EDP RxTC IRQ vector (18) Bottom Half
-		//CCEPDManager::EDROOMEventIRQ18.SignalFromTask();
+//TODO Signal EDP RxTC IRQ vector (18) Bottom Half Fixed
+		CCEPDManager::EDROOMEventIRQ18.SignalFromTask();
 
 		Pr_DelayIn(Pr_Time(0, 20000));
 

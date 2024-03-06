@@ -25,9 +25,9 @@ public:
 
 
 #include "../../../icuasw_pus_services/include/icuasw_pus_services/icuasw_pus_service1.h"
-//TODO Add PUS Services 9 and 17 header files
-//#include "../../../icuasw_pus_services/include/icuasw_pus_services/icuasw_pus_service9.h"
-//#include "../../../icuasw_pus_services/include/icuasw_pus_services/icuasw_pus_service17.h"
+//TODO Add PUS Services 9 and 17 header files Fixed
+#include "../../../icuasw_pus_services/include/icuasw_pus_services/icuasw_pus_service9.h"
+#include "../../../icuasw_pus_services/include/icuasw_pus_services/icuasw_pus_service17.h"
 
 
 class PUSPrioTCExecutor {
