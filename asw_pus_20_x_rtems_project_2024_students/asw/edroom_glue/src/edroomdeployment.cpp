@@ -100,7 +100,7 @@ TEDROOMSignal CEDROOMSystemCommSAP::C3TM_ChannelCtrl_PTMChannelCtrl3__C5BKGTCExe
  
 }
  
-TEDROOMSignal CEDROOMSystemCommSAP::C2EPDManager_PBKGExecCtrl__C5BKGTCExec_PBKGExecCtrl(TEDROOMSignal signalOut){
+TEDROOMSignal CEDROOMSystemCommSAP::C2EPDManager_PBKGTCExecCtrl__C5BKGTCExec_PBKGTCExecCtrl(TEDROOMSignal signalOut){
  
 	TEDROOMSignal signalIn;
  
@@ -115,7 +115,7 @@ TEDROOMSignal CEDROOMSystemCommSAP::C2EPDManager_PBKGExecCtrl__C5BKGTCExec_PBKGE
  
 }
  
-TEDROOMSignal CEDROOMSystemCommSAP::C5BKGTCExec_PBKGExecCtrl__C2EPDManager_PBKGExecCtrl(TEDROOMSignal signalOut){
+TEDROOMSignal CEDROOMSystemCommSAP::C5BKGTCExec_PBKGTCExecCtrl__C2EPDManager_PBKGTCExecCtrl(TEDROOMSignal signalOut){
  
 	TEDROOMSignal signalIn;
  
@@ -227,7 +227,7 @@ void CEDROOMSystemCommSAP::RegisterInterfaces(){
 	m_localCommSAP.RegisterInterface(1, mp_comp1->Timer, mp_comp1);
  
 	// Register Interface for Component 2
-	m_localCommSAP.RegisterInterface(1, mp_comp2->BKGExecCtrl, mp_comp2);
+	m_localCommSAP.RegisterInterface(1, mp_comp2->BKGTCExecCtrl, mp_comp2);
 	m_localCommSAP.RegisterInterface(2, mp_comp2->HK_FDIRCtrl, mp_comp2);
 	m_localCommSAP.RegisterInterface(3, mp_comp2->RxTC, mp_comp2);
 	m_localCommSAP.RegisterInterface(4, mp_comp2->TMChannelCtrl, mp_comp2);
@@ -243,8 +243,8 @@ void CEDROOMSystemCommSAP::RegisterInterfaces(){
 	m_localCommSAP.RegisterInterface(3, mp_comp4->HK_FDIRTimer, mp_comp4);
  
 	// Register Interface for Component 5
-	m_localCommSAP.RegisterInterface(1, mp_comp5->BKGExecCtrl, mp_comp5);
-	m_localCommSAP.RegisterInterface(2, mp_comp5->TMChannelCtrl, mp_comp5);
+	m_localCommSAP.RegisterInterface(1, mp_comp5->TMChannelCtrl, mp_comp5);
+	m_localCommSAP.RegisterInterface(2, mp_comp5->BKGTCExecCtrl, mp_comp5);
  
 }
  
@@ -258,9 +258,9 @@ void CEDROOMSystemCommSAP::SetLocalConnections(){
 					C5BKGTCExec_PTMChannelCtrl__C3TM_ChannelCtrl_PTMChannelCtrl3, 
 					C3TM_ChannelCtrl_PTMChannelCtrl3__C5BKGTCExec_PTMChannelCtrl);
  
-	m_localCommSAP.Connect(mp_comp2->BKGExecCtrl, mp_comp5->BKGExecCtrl, connections[1], 
-					C2EPDManager_PBKGExecCtrl__C5BKGTCExec_PBKGExecCtrl, 
-					C5BKGTCExec_PBKGExecCtrl__C2EPDManager_PBKGExecCtrl);
+	m_localCommSAP.Connect(mp_comp2->BKGTCExecCtrl, mp_comp5->BKGTCExecCtrl, connections[1], 
+					C2EPDManager_PBKGTCExecCtrl__C5BKGTCExec_PBKGTCExecCtrl, 
+					C5BKGTCExec_PBKGTCExecCtrl__C2EPDManager_PBKGTCExecCtrl);
  
 	m_localCommSAP.Connect(mp_comp2->HK_FDIRCtrl, mp_comp4->HK_FDIRCtrl, connections[2], 
 					C2EPDManager_PHK_FDIRCtrl__C4HK_FDIRMng_PHK_FDIRCtrl, 
