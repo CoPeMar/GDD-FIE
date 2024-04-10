@@ -73,10 +73,12 @@ void	CCHK_FDIRMng::EDROOM_CTX_Top_0::FDoHK_FDIR()
 {
    //Define absolute time
   Pr_Time time;
- 
+CDEventList eventList;
 VNextTimeout+= Pr_Time(1,0); // Add X sec + Y microsec 
 time=VNextTimeout; 
-PUSService3::DoHK(VCurrentTMList);	
+PUSService3::DoHK(VCurrentTMList);
+PUSService12::DoMonitoring(eventList);
+PUSService5::BuildEventListTMs(eventList, VCurrentTMList);	
    //Program absolute timer 
    HK_FDIRTimer.InformAt( time ); 
 }
