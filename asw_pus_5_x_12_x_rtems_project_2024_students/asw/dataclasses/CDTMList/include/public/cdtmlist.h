@@ -15,6 +15,7 @@ class CDTMList{
 	friend class PUSService5;
 	friend class PUSService12;
 	friend class PUSService17;
+	friend class PUSService19;
 	friend class PUSService20;
 
 	protected:
