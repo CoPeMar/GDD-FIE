@@ -52,3 +52,18 @@ void PUS_HK_FDIR_TCExecutor::ExecTC(CDTCHandler &tc_handler, CDTMList &tm_list,
 		tc_handler.FreeTCDescriptor();
 }
 
+void PUS_BKGTCExecutor::ExecTC(CDTCHandler &tc_handler, CDTMList &tm_list,
+		CDEventList &eventList){
+
+		tc_handler.StartUpExecution();
+
+		switch (tc_handler.GetType()) {
+					case (20):
+						PUSService20::ExecTC(tc_handler, tm_list);
+						break;
+					default: //This must be an event
+						break;
+		}
+		tc_handler.FreeTCDescriptor();
+}
+

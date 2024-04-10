@@ -7,7 +7,7 @@
 #include "public/tmtc_dyn_mem.h"
 
 enum TTCExecCtrl {
-	ExecCtrlPrioTC, ExecCtrlReboot,ExecCtrlHK_FDIRTC
+	ExecCtrlPrioTC, ExecCtrlReboot,ExecCtrlHK_FDIRTC, ExecCtrlBKGTC
 };
 
 enum TTCAcceptationStatus {
@@ -26,9 +26,11 @@ class CDTCHandler {
 	friend class PUSService9;
 	friend class PUSService3;
 	friend class PUSService17;
+	friend class PUSService20;
 
 	friend class PUSPrioTCExecutor;
 	friend class PUS_HK_FDIR_TCExecutor;
+	friend class PUS_BKGTCExecutor;
 
 	friend void SC_Channel_GetNextTC(CDTCHandler *tc);
 
@@ -106,6 +108,16 @@ protected:
 		mTCExecCtrl = ExecCtrlHK_FDIRTC;
 	}
 
+	/**
+	 * \brief Set mTCExecCtrl to ExecCtrlHK_FDIRTC
+	 *
+	 */
+
+	void SetExecCtrlAsBKGTC() {
+
+		mTCExecCtrl = ExecCtrlBKGTC;
+	}
+
 
 	/**
 	 * \brief Set Acceptation Status
@@ -162,6 +174,10 @@ public:
 
 	bool_t IsHK_FDIRTC() {
 			return ExecCtrlHK_FDIRTC == mTCExecCtrl;
+	}
+
+	bool_t IsBKGTC() {
+			return ExecCtrlBKGTC == mTCExecCtrl;
 	}
 
 	/**
