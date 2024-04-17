@@ -78,7 +78,8 @@ VNextTimeout+= Pr_Time(1,0); // Add X sec + Y microsec
 time=VNextTimeout; 
 PUSService3::DoHK(VCurrentTMList);
 PUSService12::DoMonitoring(eventList);
-PUSService5::BuildEventListTMs(eventList, VCurrentTMList);	
+PUSService5::BuildEventListTMs(eventList, VCurrentTMList);
+PUSService19::ManageEventActions(eventList); 	
    //Program absolute timer 
    HK_FDIRTimer.InformAt( time ); 
 }
@@ -129,6 +130,26 @@ void	CCHK_FDIRMng::EDROOM_CTX_Top_0::FInvokeTxTMList()
 	VCurrentTMList.Clear();
    //Invoke synchronous communication 
    MsgBack=TMChannelCtrl.invoke(STxTM,pSTxTM_Data,&EDROOMPoolCDTMList); 
+}
+
+
+
+bool	CCHK_FDIRMng::EDROOM_CTX_Top_0::GPendingEvAction()
+
+{
+
+return (!PUSService19::IsEvActionQueueEmpty());
+
+}
+
+
+
+void	CCHK_FDIRMng::EDROOM_CTX_Top_0::FTriggerEvAction()
+
+{
+
+PUSService19::TriggerEvActionExecution();
+
 }
 
 
@@ -200,15 +221,6 @@ void CCHK_FDIRMng::EDROOM_SUB_Top_0::EDROOMBehaviour()
 				//Next State is Ready
 				edroomNextState = Ready;
 				break;
-			//Next Transition is DoHK_FDIR
-			case (DoHK_FDIR):
-				//Execute Action 
-				FDoHK_FDIR();
-				//Invoke Synchronous Message 
-				FInvokeTxTMList();
-				//Next State is Ready
-				edroomNextState = Ready;
-				break;
 			//Next Transition is ExecTC
 			case (ExecTC):
 				//Msg->Data Handling 
@@ -217,6 +229,38 @@ void CCHK_FDIRMng::EDROOM_SUB_Top_0::EDROOMBehaviour()
 				FInvokeTxTMList();
 				//Next State is Ready
 				edroomNextState = Ready;
+				break;
+			//To Choice Point DoHK_FDIR
+			case (DoHK_FDIR):
+
+				//Execute Action 
+				FDoHK_FDIR();
+				//Invoke Synchronous Message 
+				FInvokeTxTMList();
+				//Evaluate Branch PendingEvAction
+				if( GPendingEvAction() )
+				{
+					//Execute Action 
+					FTriggerEvAction();
+
+					//Branch taken is DoHK_FDIR_PendingEvAction
+					edroomCurrentTrans.localId =
+						DoHK_FDIR_PendingEvAction;
+
+					//Next State is Ready
+					edroomNextState = Ready;
+				 } 
+				//Default Branch NoEvAction
+				else
+				{
+
+					//Branch taken is DoHK_FDIR_NoEvAction
+					edroomCurrentTrans.localId =
+						DoHK_FDIR_NoEvAction;
+
+					//Next State is Ready
+					edroomNextState = Ready;
+				 } 
 				break;
 		}
 
@@ -302,19 +346,6 @@ TEDROOMTransId CCHK_FDIRMng::EDROOM_SUB_Top_0::EDROOMReadyArrival()
 		switch(Msg->signal)
 		{
 
-			case (EDROOMSignalTimeout): 
-
-				 if (*Msg->GetPInterface() == HK_FDIRTimer)
-				{
-
-					//Next transition is  DoHK_FDIR
-					edroomCurrentTrans.localId= DoHK_FDIR;
-					edroomCurrentTrans.distanceToContext = 0;
-					edroomValidMsg=true;
-				 }
-
-				break;
-
 			case (SHK_FDIR_TC): 
 
 				 if (*Msg->GetPInterface() == HK_FDIRCtrl)
@@ -323,6 +354,19 @@ TEDROOMTransId CCHK_FDIRMng::EDROOM_SUB_Top_0::EDROOMReadyArrival()
 					//Next transition is  ExecTC
 					edroomCurrentTrans.localId= ExecTC;
 					edroomCurrentTrans.distanceToContext = 0;
+					edroomValidMsg=true;
+				 }
+
+				break;
+
+			case (EDROOMSignalTimeout): 
+
+				 if (*Msg->GetPInterface() == HK_FDIRTimer)
+				{
+
+					//Next transition is  DoHK_FDIR
+					edroomCurrentTrans.localId = DoHK_FDIR;
+					edroomCurrentTrans.distanceToContext = 0 ;
 					edroomValidMsg=true;
 				 }
 

@@ -213,8 +213,10 @@ public:
 
 		//!Transition Identifiers
 		enum TEDROOMTransitionID{Init,
-			DoHK_FDIR,
 			ExecTC,
+			DoHK_FDIR,
+			DoHK_FDIR_PendingEvAction,
+			DoHK_FDIR_NoEvAction,
 			EDROOMMemoryTrans };
 
 
@@ -287,6 +289,16 @@ public:
 		 * \brief  
 		 */
 		void	FInvokeTxTMList();
+
+		/**
+		 * \brief 
+		 */
+		bool	GPendingEvAction();
+
+		/**
+		 * \brief 
+		 */
+		void	FTriggerEvAction();
 
 	};
 

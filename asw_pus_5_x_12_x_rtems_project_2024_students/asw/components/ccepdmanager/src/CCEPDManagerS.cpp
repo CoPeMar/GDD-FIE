@@ -4,6 +4,101 @@
 
 
 
+	// ******************* HANDLING IRQ 10********************
+
+Pr_IRQEvent	CCEPDManager::EDROOMEventIRQ10(10);
+Pr_SemaphoreBin	CCEPDManager::EDROOMSemEndIRQ10(0);
+
+
+		// ******************* DATA ***************
+
+CDEvAction	CCEPDManager::	EDROOMVarIRQ10;
+
+
+		// ******************* DATA POOL *******
+
+CCEPDManager::CEDROOMPOOLIRQ10CDEvAction	CCEPDManager::EDROOMPoolIRQ10;
+
+
+		// ******************* Aux IRQ Handler **************
+
+void 	CCEPDManager::EDROOMIRQ10HandlerTopHalfFunction(void){
+
+	bool EDROOMIRQ10BottomHalfSignal=true;
+	if (EDROOMIRQ10BottomHalfSignal)
+		EDROOMEventIRQ10.Signal();
+
+}
+
+
+
+		// ******************* IRQ Handler **************
+
+Pr_IRQHandler_RetType	CCEPDManager::EDROOMIRQ10Handler(void){
+
+	EDROOMIRQ10HandlerTopHalfFunction();
+
+}
+
+
+
+		// ******************* IRQ Idle Handler **************
+
+Pr_IRQHandler_RetType	CCEPDManager::EDROOMIRQ10IdleHandler(void){
+
+}
+
+
+
+		// ******************* Bottom Half Task **************
+
+Pr_TaskRV_t 	CCEPDManager::EDROOMIRQ10BottomHalfTask(Pr_TaskP_t){
+
+	bool endTask=false;
+
+	do
+	{
+
+		EDROOMEventIRQ10.Wait();
+
+		bool EDROOMIRQ10SendMsgToCmp=true;
+
+		if(!EDROOMSemEndIRQ10.WaitCond()){
+
+			EDROOMIRQ10SendMsgToCmp = 
+
+			PUSService19::ExtractEvActionFromQueue(EDROOMVarIRQ10);
+
+			if(EDROOMIRQ10SendMsgToCmp){
+				CDEvAction	*pEDROOMVarIRQ;
+
+				pEDROOMVarIRQ=EDROOMPoolIRQ10.AllocData();
+
+				*pEDROOMVarIRQ=EDROOMVarIRQ10;
+
+				EvActionQueue.NewIRQMsg(EDROOMIRQsignal, pEDROOMVarIRQ, &EDROOMPoolIRQ10);
+
+			}
+			Pr_IRQManager::EnableIRQ(10);
+
+		}else endTask=1;
+
+	}while(!endTask);
+
+}
+
+
+
+		// ******************* IRQPort **************
+
+CEDROOMIRQInterface CCEPDManager::EvActionQueue( 
+		CCEPDManager::EDROOMIRQ10Handler 
+		,CCEPDManager::EDROOMIRQ10IdleHandler 
+		,CCEPDManager::EDROOMEventIRQ10
+		,CCEPDManager::EDROOMSemEndIRQ10
+		,10 );
+
+
 	// ******************* HANDLING IRQ 18********************
 
 Pr_IRQEvent	CCEPDManager::EDROOMEventIRQ18(18);
@@ -132,6 +227,10 @@ CCEPDManager::CCEPDManager(TEDROOMComponentID id,
 
 		// ***************   BOTTOM HALF IRQ TASKS  ********************
 
+		EDROOMIRQ10BottomHalfT( EDROOMIRQ10BottomHalfTask,EDROOMprioURGENT,256),
+
+		// ***************   BOTTOM HALF IRQ TASKS  ********************
+
 		EDROOMIRQ18BottomHalfT( EDROOMIRQ18BottomHalfTask,EDROOMprioURGENT,256),
 
 		// ***************	Top State  *****************
@@ -191,6 +290,10 @@ void CCEPDManager::EDROOMBehaviour()
 	edroomTopState.EDROOMInit();
 	edroomTopState.EDROOMBehaviour();
 
+
+		// *************** PUERTOS IRQ ********************
+
+	EvActionQueue.EndIRQHandlerTask();
 
 		// *************** PUERTOS IRQ ********************
 

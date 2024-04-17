@@ -11,6 +11,7 @@
 //******************************************************************************
 // Data Classes
 
+#include <public/cdevaction_iface_v1.h>
 #include <public/cdtchandler_iface_v1.h>
 #include <public/cdtmlist_iface_v1.h>
 #include <public/cdeventlist_iface_v1.h>
@@ -38,9 +39,9 @@ public:
 	 */
 	 enum TEDROOMCCEPDManagerSignal { EDROOMSignalTimeout, 
 							EDROOMSignalDestroy, 
+							EDROOMIRQsignal, 
 							SBKGTC, 
 							SHK_FDIR_TC, 
-							EDROOMIRQsignal, 
 							STxTM, 
 							STMQueued };
 
@@ -106,6 +107,47 @@ public:
 	// ********************************************************************
 	// ************************* Component IRQ Handling *******************
 	// ********************************************************************
+
+	// ********************************
+	// Handling IRQ vector 10
+
+	//! Event for trigger the bottom half associated to the IRQ vector 10
+	static Pr_IRQEvent	EDROOMEventIRQ10;
+	//! Binary Semaphore for signal the end of the bottom half of the IRQ vector 10
+	static Pr_SemaphoreBin	EDROOMSemEndIRQ10;
+	//! IRQ Handler for the IRQ vector 10
+	static Pr_IRQHandler_RetType	EDROOMIRQ10Handler(void);
+	//! Top Half Function for IRQ Handler  10
+	static void	EDROOMIRQ10HandlerTopHalfFunction(void);
+	//! Idle IRQ Handler for the IRQ vector 10
+	static Pr_IRQHandler_RetType	EDROOMIRQ10IdleHandler(void);
+	//! Bottom Half Task Function for the IRQ vector 10
+	static Pr_TaskRV_t 	EDROOMIRQ10BottomHalfTask(Pr_TaskP_t);
+	//! Bottom Half Pr_Task Object for the IRQ vector 10
+	Pr_Task 	EDROOMIRQ10BottomHalfT;
+	//! Component Port associated to the IRQ vector 10
+	static CEDROOMIRQInterface	EvActionQueue;
+	//! Global variable required for the botton half of the IRQ vector 10
+	static CDEvAction	EDROOMVarIRQ10;
+	/**
+	 * \class CEDROOMPOOLIRQ10CDEvAction
+	 * \brief Data Pool Class required for the botton half of the IRQ vector 10
+	 *
+	 */
+	class CEDROOMPOOLIRQ10CDEvAction:public CEDROOMProtectedMemoryPool {
+		//! Data Pool Memory
+		CDEvAction mem[10+1];
+		//! Data Pool Memory Marks
+		bool marks[10];
+		public:
+		//! Constructor
+		CEDROOMPOOLIRQ10CDEvAction():CEDROOMProtectedMemoryPool(10,mem,marks, sizeof(CDEvAction)){}
+		//! Function for allocating a data from the pool
+		CDEvAction	* AllocData(){ return ( CDEvAction	* ) CEDROOMProtectedMemoryPool::AllocData();}
+	};
+	 //!Data Pool required for the botton half of the IRQ vector 10
+	static CEDROOMPOOLIRQ10CDEvAction	EDROOMPoolIRQ10;
+
 
 	// ********************************
 	// Handling IRQ vector 18
@@ -214,9 +256,9 @@ public:
 	 */
 	enum TEDROOMCCEPDManagerSignal { EDROOMSignalTimeout,
 		EDROOMSignalDestroy,
+		EDROOMIRQsignal,
 		SBKGTC,
 		SHK_FDIR_TC,
-		EDROOMIRQsignal,
 		STxTM,
 		STMQueued };
 
@@ -236,6 +278,7 @@ public:
 		CEDROOMInterface & BKGExecCtrl;
 		CEDROOMInterface & HK_FDIRCtrl;
 		CEDROOMInterface & TMChannelCtrl;
+		CEDROOMIRQInterface & EvActionQueue;
 		CEDROOMIRQInterface & RxTC;
 
 
@@ -255,6 +298,7 @@ public:
 			HandleTC_FwdHK_FDIRTC,
 			HandleTC_FwdToBKGTCExec,
 			HandleTC_ExecPrioTC,
+			NewEvAction,
 			EDROOMMemoryTrans };
 
 
@@ -376,6 +420,11 @@ public:
 		 * \brief  
 		 */
 		bool	GToReboot();
+
+		/**
+		 * \brief 
+		 */
+		void	FGetEvAction();
 
 	};
 

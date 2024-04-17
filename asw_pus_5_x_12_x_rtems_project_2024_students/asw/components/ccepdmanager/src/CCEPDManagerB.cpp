@@ -23,6 +23,7 @@ CCEPDManager::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(CCEPDManager &act,
 	BKGExecCtrl(EDROOMcomponent.BKGExecCtrl),
 	HK_FDIRCtrl(EDROOMcomponent.HK_FDIRCtrl),
 	TMChannelCtrl(EDROOMcomponent.TMChannelCtrl),
+	EvActionQueue(EDROOMcomponent.EvActionQueue),
 	RxTC(EDROOMcomponent.RxTC),
 	VCurrentEvList(EDROOMpVarVCurrentEvList),
 	VCurrentTC(EDROOMpVarVCurrentTC),
@@ -40,6 +41,7 @@ CCEPDManager::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(EDROOM_CTX_Top_0 &context):
 	BKGExecCtrl(context.BKGExecCtrl),
 	HK_FDIRCtrl(context.HK_FDIRCtrl),
 	TMChannelCtrl(context.TMChannelCtrl),
+	EvActionQueue(context.EvActionQueue),
 	RxTC(context.RxTC),
 	VCurrentEvList(context.VCurrentEvList),
 	VCurrentTC(context.VCurrentTC),
@@ -227,6 +229,17 @@ return VCurrentTC.IsRebootTC();
 
 
 
+void	CCEPDManager::EDROOM_CTX_Top_0::FGetEvAction()
+
+{
+   //Handle Msg->data
+  CDEvAction & varEDROOMIRQsignal = *(CDEvAction *)Msg->data;
+PUSService19::GetEvActionTCHandler(varEDROOMIRQSignal, VCurrentTC); 
+
+}
+
+
+
 	//********************************** Pools *************************************
 
 	//CEDROOMPOOLCDTMList
@@ -348,6 +361,13 @@ void CCEPDManager::EDROOM_SUB_Top_0::EDROOMBehaviour()
 					//Next State is Ready
 					edroomNextState = Ready;
 				 } 
+				break;
+			//Next Transition is NewEvAction
+			case (NewEvAction):
+				//Msg->Data Handling 
+				FGetEvAction();
+				//Next State is ValidTC
+				edroomNextState = ValidTC;
 				break;
 			//To Choice Point HandleTC
 			case (HandleTC):
@@ -535,6 +555,15 @@ TEDROOMTransId CCEPDManager::EDROOM_SUB_Top_0::EDROOMReadyArrival()
 					//Next transition is  NewRxTC
 					edroomCurrentTrans.localId = NewRxTC;
 					edroomCurrentTrans.distanceToContext = 0 ;
+					edroomValidMsg=true;
+				 }
+
+				 else if (*Msg->GetPInterface() == EvActionQueue)
+				{
+
+					//Next transition is  NewEvAction
+					edroomCurrentTrans.localId= NewEvAction;
+					edroomCurrentTrans.distanceToContext = 0;
 					edroomValidMsg=true;
 				 }
 
