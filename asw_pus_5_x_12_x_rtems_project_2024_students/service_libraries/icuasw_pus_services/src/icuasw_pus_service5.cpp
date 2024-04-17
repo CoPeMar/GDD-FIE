@@ -147,12 +147,15 @@ void PUSService5::Exec5_5TC(CDTCHandler &tcHandler, CDTMList &tmList) {
 	//RID is obtained from TC AppData
 	RID = tcHandler.GetNextUInt16();
 
-	//TODO use GetRIDEnableConfigIndex and GetRIDEnableConfigOffset
+	//TODO Fixed use GetRIDEnableConfigIndex and GetRIDEnableConfigOffset
 	//for set the bit of the array that enables the RID
+
+	index = PUSService5::GetRIDEnableConfigIndex(RID);
+	offset = PUSService5::GetRIDEnableConfigOffset(RID);
 
 	if (IsIndexValid(index)) {
 
-
+		PUSService5::RIDEnableConfig[index] = PUSService5::RIDEnableConfig[index] | (0x01 << offset);
 
 		PUSService1::BuildTM_1_7(tcHandler, tmList);
 
@@ -173,17 +176,21 @@ void PUSService5::Exec5_6TC(CDTCHandler &tcHandler, CDTMList &tmList) {
 	RID = tcHandler.GetNextUInt16();
 
 	//TODO use GetRIDEnableConfigIndex and GetRIDEnableConfigOffset
+	//Arreglar: hay que cambiar la máscara en este lugar invirtiendo RIDEnableConfig y haciendo un AND. Hecho
 
+	index = PUSService5::GetRIDEnableConfigIndex(RID);
+	offset = PUSService5::GetRIDEnableConfigOffset(RID);
 
+	if (IsIndexValid(index)) {
 
+			PUSService5::RIDEnableConfig[index] = PUSService5::RIDEnableConfig[index] & ~(0x01 << offset);
 
+			PUSService1::BuildTM_1_7(tcHandler, tmList);
 
+		} else {
 
-
-
-
-
-
+			PUSService1::BuildTM_1_8_TC_5_X_RIDUnknown(tcHandler, tmList, RID);
+		}
 }
 
 void PUSService5::ExecTC(CDTCHandler &tcHandler, CDTMList &tmList) {
@@ -194,8 +201,11 @@ void PUSService5::ExecTC(CDTCHandler &tcHandler, CDTMList &tmList) {
 
 		Exec5_5TC(tcHandler, tmList);
 		break;
-	//TODO Complete for enable [5,6] Execution
+	//TODO Fixed Complete for enable [5,6] Execution
+	case (6):
 
+		Exec5_6TC(tcHandler, tmList);
+		break;
 
 	default:
 		//This must be not possible

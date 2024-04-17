@@ -19,7 +19,7 @@
 
 //#define FT_SOLO_EPD_ICU_SERV_20_UPDATE_PARAM_VALUE_0060
 
-#define FT_SOLO_EPD_ICU_Monitoring_0070
+#define FT_SOLO_EPD_ICU_Monitoring_0080
 
 #ifdef FT_SOLO_EPD_ICU_SERV_17_0010
 
@@ -120,6 +120,42 @@ EmuGSS_TCProgram20_3 prog_FT_0070_step_3(FT_0070_TIME_step3,
 
 EmuGSS_TCProgram20_3 prog_FT_0070_step_4(FT_0070_TIME_step4,
 		"FT_SOLO_EPD_ICU_Monitoring_0070 step 4, Update PID 1 to 0", 1, 0);
+
+#endif
+
+//TODO Fixed Finalizar la creación del test. Necesito averiguar la estructura de este EmuGSS_TCProgram5_5 y 5_6
+#ifdef FT_SOLO_EPD_ICU_Monitoring_0080
+
+#define FT_0080_TIME_step0 (UNITIME_AFTER_POWER_ON + 5)
+#define FT_0080_TIME_step1 (UNITIME_AFTER_POWER_ON + 7)
+#define FT_0080_TIME_step2 (UNITIME_AFTER_POWER_ON + 20)
+#define FT_0080_TIME_disab (UNITIME_AFTER_POWER_ON + 10)
+#define FT_0080_TIME_step3 (UNITIME_AFTER_POWER_ON + 40)
+#define FT_0080_TIME_enabl (UNITIME_AFTER_POWER_ON + 50)
+#define FT_0080_TIME_step4 (UNITIME_AFTER_POWER_ON + 60)
+
+
+EmuGSS_TCProgram12_5 prog_FT_0080_step_0(FT_0080_TIME_step0,
+		"FT_SOLO_EPD_ICU_Monitoring_0080 step 0, Config PMODID 0 for monitoring PID 1",
+		0, 1, 5, 1, 0x4000, 10, 0x4001);
+
+EmuGSS_TCProgram12_1 prog_FT_0080_step_1(FT_0080_TIME_step1,
+		"FT_SOLO_EPD_ICU_Monitoring_0080 step 1, Enable Monitoring PMODID 0", 0);
+
+EmuGSS_TCProgram5_6 prog_FT_0080_disable(FT_0080_TIME_disab,
+		"FT_SOLO_EPD_ICU_Monitoring_0080 disable step, Disable RID 0x4001", 0x4001);
+
+EmuGSS_TCProgram20_3 prog_FT_0080_step_2(FT_0080_TIME_step2,
+		"FT_SOLO_EPD_ICU_Monitoring_0080 step 2, Update PID 1 to 99", 1, 99);
+
+EmuGSS_TCProgram20_3 prog_FT_0080_step_3(FT_0080_TIME_step3,
+		"FT_SOLO_EPD_ICU_Monitoring_0080 step 3, Update PID 1 to 5", 1, 5);
+
+EmuGSS_TCProgram5_5 prog_FT_0080_enable(FT_0080_TIME_enabl,
+		"FT_SOLO_EPD_ICU_Monitoring_0080 enable step, Enable RID 0x4001", 0x4001);
+
+EmuGSS_TCProgram20_3 prog_FT_0080_step_4(FT_0080_TIME_step4,
+		"FT_SOLO_EPD_ICU_Monitoring_0080 step 4, Update PID 1 to 0", 1, 0);
 
 #endif
 
