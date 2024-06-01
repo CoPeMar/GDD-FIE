@@ -1,0 +1,724 @@
+import "../../../dataclasses/CDTMList/models/CDTMList.ed_dclass";
+import "../../../dataclasses/CDTCHandler/models/CDTCHandler.ed_dclass";
+import "../../../dataclasses/CDEvAction/models/CDEvAction.ed_dclass";
+import "../../../dataclasses/CDEventList/models/CDEventList.ed_dclass";
+import "../../../protocols/CPTMChannelCtrl/models/CPTMChannelCtrl.ed_prot";
+import "../../../protocols/CPTxTC/models/CPTxTC.ed_prot";
+import "../../../protocols/CPHK_FDIRCtrl/models/CPHK_FDIRCtrl.ed_prot";
+import "../../../protocols/CPBKGExecCtrl/models/CPBKGExecCtrl.ed_prot";
+import "../../../protocols/CPEvActionQueue/models/CPEvActionQueue.ed_prot";
+import "../../../protocols/CPGuidanceCtrl/models/CPGuidanceCtrl.ed_prot";
+import "../../../protocols/EDROOMServiceLibrary/models/EDROOMServiceLibrary.ed_prot";
+import "../../../sais/icuasw_pus_services_iface_v1/models/icuasw_pus_services_iface_v1.ed_sai";
+import "../../../sais/sc_channel_drv_v1/models/sc_channel_drv_v1.ed_sai";
+
+
+
+/**
+ * \class   CCExplorerManager
+ *
+ */
+
+
+proactive component CCExplorerManager{
+
+	uri := es.uah.aut.srg.edroom.mclev.cmp.CCExplorerManager;
+	version := v1;
+	stack_size := 1024;
+	def_max_nb_messages := 10;
+	requires := icuasw_pus_services_iface(v1),
+			sc_channel_drv(v1);
+
+
+
+
+	structure {
+
+		ports {
+
+
+			system port EDROOMsl
+			{
+				id:= 0;
+				protocol:= EDROOMServiceLibrary(v1);
+			};
+			conjugated  external port GuidanceCtrl {
+				id := 1;
+				cardinality := 1;
+				protocol := CPGuidanceCtrl(v1);
+
+			};
+
+			interrupt port EvActionQueue {
+				id := 2;
+				irq vectors := 10;
+				data pool := CDEvAction(v1)CDEDROOMPoolCDEvAction[10];
+				protocol := CPEvActionQueue(v1);
+
+				non_maskable := false;
+				enable_msg_to_component := true;
+				priority := 2;
+				enable_bottom_half := true;
+				top half {
+					<code>
+
+
+					</code>
+				};
+				bottom half {
+					<code>
+
+						 
+						 
+						 
+						EDROOMIRQ10SendMsgToCmp 
+						=PUSService19::ExtractEvActionFromQueue(EDROOMVarIRQ10);
+						 
+						 
+								
+
+					</code>
+				};
+			};
+
+			conjugated  external port BKGExecCtrl {
+				id := 3;
+				cardinality := 1;
+				protocol := CPBKGExecCtrl(v1);
+
+			};
+
+			conjugated  external port HK_FDIRCtrl {
+				id := 4;
+				cardinality := 1;
+				protocol := CPHK_FDIRCtrl(v1);
+
+			};
+
+			interrupt port RxTC {
+				id := 5;
+				irq vectors := 18;
+				data pool := CDTCHandler(v1)CDEDROOMPoolCDTCHandler[10];
+				protocol := CPTxTC(v1);
+
+				non_maskable := false;
+				enable_msg_to_component := true;
+				priority := 2;
+				enable_bottom_half := true;
+				top half {
+					<code>
+
+						#ifdef NEXYS_PLATFORM 
+						 
+						EDROOMIRQ18BottomHalfSignal=EDROOMVarIRQ18.HandleIRQ();
+						 
+						#endif
+
+					</code>
+				};
+				bottom half {
+					<code>
+
+						 
+						 
+						 
+						SC_Channel_GetNextTC(&EDROOMVarIRQ18);
+						 
+						 
+
+					</code>
+				};
+			};
+
+			conjugated  external port TMChannelCtrl {
+				id := 6;
+				cardinality := 1;
+				protocol := CPTMChannelCtrl(v1);
+
+			};
+
+
+
+		};
+
+
+		data pools {
+			CDTMList(v1) CEDROOMPoolCDTMList[10];
+			CDTCHandler(v1) CEDROOMPoolCDTCHandler[10];
+
+		};
+
+
+	};
+
+
+	behaviour {
+
+		contexts {
+
+
+			context Top_0{
+
+
+				id := 0;
+
+
+				variables {
+					variable VCurrentEvList{
+					 class := CDEventList(v1);
+
+					 constructor := "";
+					 dimension := 0;
+					};
+					variable VCurrentTC{
+					 class := CDTCHandler(v1);
+
+					 constructor := "";
+					 dimension := 0;
+					};
+					variable VCurrentTMList{
+					 class := CDTMList(v1);
+
+					 constructor := "";
+					 dimension := 0;
+					};
+
+
+				};
+
+
+				states {
+					state I{
+						id := 0;
+					};
+					state Ready{
+						id := 1;
+					};
+					state Reboot{
+						id := 2;
+
+						entry actions := FReboot;
+					};
+				};
+
+
+				join points{
+
+					join point ValidTC{
+						id := 0;
+
+						output branch HandleTC{
+							id := 0;
+							sink := HandleTC;
+
+						};
+					};
+				};
+
+
+				init state := I;
+
+
+				guards{
+
+					/**
+					 * \brief  
+					 */
+
+					guard GAcceptTC {
+						<code>
+						return VCurrentTC.IsAccepted();
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					guard GFwdToBKGTCExec {
+						<code>
+						 return VCurrentTC.IsBKGTC();
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					guard GFwdToHK_FDIR {
+						<code>
+						return VCurrentTC.IsHK_FDIRTC();
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					guard GToReboot {
+						<code>
+						return VCurrentTC.IsRebootTC();
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief 
+					 */
+
+					guard GFwdToGuidanceExec {
+						<code>
+						return VCurrentTC.IsGuidanceTC();
+
+
+						</code>
+
+					};
+
+
+				};
+
+
+				items{
+					/**
+					 * \brief  
+					 */
+
+					action FExecPrioTC {
+						<code>
+						 PUSPrioTCExecutor::ExecTC(VCurrentTC,VCurrentTMList,VCurrentEvList);
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					send FFwdHK_FDIRTC {
+						code {
+							<code>
+								
+									// Complete Data 
+								
+							*pSHK_FDIR_TC_Data=VCurrentTC;   
+
+
+							</code>
+						};
+
+						port :=HK_FDIRCtrl;
+
+						message :=CPHK_FDIRCtrl(v1)::SHK_FDIR_TC;
+
+						priority :=3;
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					send FFwdToBKGTCExec {
+						code {
+							<code>
+								
+									// Complete Data 
+								
+								*pSBKGTC_Data=VCurrentTC;  
+
+
+							</code>
+						};
+
+						port :=BKGExecCtrl;
+
+						message :=CPBKGExecCtrl(v1)::SBKGTC;
+
+						priority :=3;
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					msgdatahandler FGetEvAction {
+						code {
+							<code>
+								
+								
+							PUSService19::GetEvActionTCHandler(varEDROOMIRQsignal,VCurrentTC);
+							 
+							 
+							 
+
+
+							</code>
+						};
+
+						port :=EvActionQueue;
+
+						message :=CPEvActionQueue(v1)::EDROOMIRQsignal;
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					msgdatahandler FGetTC {
+						code {
+							<code>
+								
+									// Data access
+								
+							VCurrentTC=varEDROOMIRQsignal;
+							 
+							PUSService1::TryTCAcceptation(VCurrentTC);
+
+
+							</code>
+						};
+
+						port :=RxTC;
+
+						message :=CPTxTC(v1)::EDROOMIRQsignal;
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					action FInit {
+						<code>
+						RxTC.MaskIRQ();
+						 
+						RxTC.InstallHandler();
+						SC_Channel_Init(&amp;RxTC);
+						 
+						RxTC.UnMaskIRQ();
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					invoke FInvokeTxTMList {
+						code {
+							<code>
+								
+									// Complete Data 
+								
+								*pSTxTM_Data=VCurrentTMList;    
+								VCurrentTMList.Clear();
+
+
+							</code>
+						};
+
+						port :=TMChannelCtrl;
+
+						message :=CPTMChannelCtrl(v1)::STxTM;
+
+						priority :=1;
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					action FMngTCAcceptation {
+						<code>
+						 
+						PUSService1::BuildTM_1_1(VCurrentTC, VCurrentTMList);
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					action FMngTCRejection {
+						<code>
+						 
+						PUSService1::BuildTM_1_2(VCurrentTC, VCurrentTMList);
+						 
+						PUSService1::CompleteTCRejection(VCurrentTC);
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief  
+					 */
+
+					action FReboot {
+						<code>
+						PUSService128::MngReboot();
+
+
+						</code>
+
+					};
+
+					/**
+					 * \brief 
+					 */
+
+					send FFwdToGuidanceExec {
+						code {
+							<code>
+								
+									// Complete Data 
+								
+								*pSGuidance_Data=VCurrentTC;
+
+
+							</code>
+						};
+
+						port :=GuidanceCtrl;
+
+						message :=CPGuidanceCtrl(v1)::SGuidance;
+
+						priority :=3;
+
+					};
+
+					/**
+					 * \brief 
+					 */
+
+					send FFwdToGuidanceTCExec {
+						code {
+							<code>
+								
+									// Complete Data 
+								
+								*pSGuidance_Data=VCurrentTC;
+
+
+							</code>
+						};
+
+						port :=GuidanceCtrl;
+
+						message :=CPGuidanceCtrl(v1)::SGuidance;
+
+						priority :=3;
+
+					};
+
+
+				};
+
+
+				choice points{
+					choice point NewRxTC{
+
+
+						id := 0;
+
+
+						branches{
+
+							branch NewRxTC_Accepted{
+								id := 0;
+								sink := ValidTC;
+
+
+								actions := FMngTCAcceptation;
+
+								handshakes{
+									handshake{
+										invoke := FInvokeTxTMList;
+									};
+								};
+
+								guard := GAcceptTC;
+
+							};
+
+
+						};
+
+						default branch NewRxTC_NotAccepted{
+							id := 1;
+							sink := Ready;
+
+
+							actions := FMngTCRejection;
+
+							handshakes{
+								handshake{
+									invoke := FInvokeTxTMList;
+								};
+							};
+						};
+					};
+					choice point HandleTC{
+
+
+						id := 1;
+
+
+						branches{
+
+							branch HandleTC_ToReboot{
+								id := 0;
+								sink := Reboot;
+
+
+								actions := FExecPrioTC;
+
+								handshakes{
+									handshake{
+										invoke := FInvokeTxTMList;
+									};
+								};
+
+								guard := GToReboot;
+
+							};
+
+							branch HandleTC_FwdHK_FDIRTC{
+								id := 1;
+								sink := Ready;
+
+
+								sends := FFwdHK_FDIRTC;
+
+								guard := GFwdToHK_FDIR;
+
+							};
+
+							branch HandleTC_FwdToBKGTCExec{
+								id := 2;
+								sink := Ready;
+
+
+								sends := FFwdToBKGTCExec;
+
+								guard := GFwdToBKGTCExec;
+
+							};
+
+							branch HandleTC_FwdToGuidanceTCExec{
+								id := 3;
+								sink := Ready;
+
+
+								sends := FFwdToGuidanceTCExec;
+
+								guard := GFwdToGuidanceExec;
+
+							};
+
+
+						};
+
+						default branch HandleTC_ExecPrioTC{
+							id := 4;
+							sink := Ready;
+
+
+							actions := FExecPrioTC;
+
+							handshakes{
+								handshake{
+									invoke := FInvokeTxTMList;
+								};
+							};
+						};
+					};
+				};
+
+
+				transitions{
+
+					transition Init{
+						id := 0;
+						source := I;
+						sink := Ready;
+
+
+						actions := FInit;
+
+
+						asynchronous trigger {
+							port := EDROOMsl;
+							message := EDROOMServiceLibrary(v1)::EDROOMStart;
+						};
+					};
+
+					transition NewRxTC{
+						id := 1;
+						source := Ready;
+						sink := NewRxTC;
+
+
+						msgdatahandler := FGetTC;
+
+
+						asynchronous trigger {
+							port := RxTC;
+							message := CPTxTC(v1)::EDROOMIRQsignal;
+						};
+					};
+
+					transition NewEvAction{
+						id := 3;
+						source := Ready;
+						sink := ValidTC;
+
+
+						msgdatahandler := FGetEvAction;
+
+
+						asynchronous trigger {
+							port := EvActionQueue;
+							message := CPEvActionQueue(v1)::EDROOMIRQsignal;
+						};
+					};
+
+
+				};
+
+
+			};
+
+
+		};
+
+		top context := Top_0;
+
+
+	};
+
+
+};

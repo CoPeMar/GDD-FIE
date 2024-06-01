@@ -1,0 +1,32 @@
+import "../../../dataclasses/CDEvAction/models/CDEvAction.ed_dclass";
+
+
+/*
+ * EDROOM Protocol Model.
+*/ 
+
+
+protocol CPEvActionQueue{
+
+	uri :=es.uah.aut.srg.edroom.mclev.cmp_iface.CPEvActionQueue;
+	version :=v1;
+
+
+	/*
+	 * Input messages.
+	*/ 
+
+	input messages
+
+	{
+
+
+		/*
+		 * Asynchronous messages.
+		*/ 
+
+		send EDROOMIRQsignal(CDEvAction(v1));
+
+	};
+
+};
