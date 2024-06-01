@@ -125,6 +125,10 @@ EmuGSS_TCProgram2_1 prog_FT_0080_step_2(UNITIME_AFTER_POWER_ON + 6,
 #endif
 
 #ifdef FT_SOLO_EPD_Event_Action_0090
+// Para este setup no hay que incluir N ya que
+// solo se pueden realizar las acciones de una en una
+EmuGSS_TCProgram19_1 prog_FT_0080_step_0(UNITIME_AFTER_POWER_ON + 6,
+					 "FT_SOLO_EPD_ICU_SERV_19_1_0090 step 0, Device 1 Off")
 
 
 
