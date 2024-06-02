@@ -12,6 +12,7 @@
 
 CCGuidance::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(CCGuidance &act,
 	 CDTMList & EDROOMpVarVCurrentTMList,
+	 Pr_Time & EDROOMpVarVNextTimeout,
 	 CEDROOMPOOLCDTMList & EDROOMpPoolCDTMList ):
 
 	EDROOMcomponent(act),
@@ -21,6 +22,7 @@ CCGuidance::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(CCGuidance &act,
 	TMChannelCtrl(EDROOMcomponent.TMChannelCtrl),
 	GuidancePeriod(EDROOMcomponent.GuidancePeriod),
 	VCurrentTMList(EDROOMpVarVCurrentTMList),
+	VNextTimeout(EDROOMpVarVNextTimeout),
 	EDROOMPoolCDTMList(EDROOMpPoolCDTMList)
 {
 }
@@ -34,6 +36,7 @@ CCGuidance::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(EDROOM_CTX_Top_0 &context):
 	TMChannelCtrl(context.TMChannelCtrl),
 	GuidancePeriod(context.GuidancePeriod),
 	VCurrentTMList(context.VCurrentTMList),
+	VNextTimeout(context.VNextTimeout),
 	EDROOMPoolCDTMList(context.EDROOMPoolCDTMList )
 {
 
@@ -156,6 +159,7 @@ CCGuidance::EDROOM_SUB_Top_0::EDROOM_SUB_Top_0 (CCGuidance&act
 	,CEDROOMMemory *pEDROOMMemory):
 		EDROOM_CTX_Top_0(act,
 			VCurrentTMList,
+			VNextTimeout,
 			EDROOMPoolCDTMList),
 		EDROOMPoolCDTMList(
 			10, pEDROOMMemory->poolCDTMList,
