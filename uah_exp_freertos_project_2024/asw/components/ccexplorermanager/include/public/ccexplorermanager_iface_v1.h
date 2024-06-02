@@ -385,6 +385,16 @@ public:
 		/**
 		 * \brief  
 		 */
+		void	FFwdToGuidanceExec();
+
+		/**
+		 * \brief  
+		 */
+		void	FFwdToGuidanceTCExec();
+
+		/**
+		 * \brief  
+		 */
 		void	FGetEvAction();
 
 		/**
@@ -430,27 +440,17 @@ public:
 		/**
 		 * \brief  
 		 */
+		bool	GFwdToGuidanceExec();
+
+		/**
+		 * \brief  
+		 */
 		bool	GFwdToHK_FDIR();
 
 		/**
 		 * \brief  
 		 */
 		bool	GToReboot();
-
-		/**
-		 * \brief 
-		 */
-		void	FFwdToGuidanceExec();
-
-		/**
-		 * \brief 
-		 */
-		bool	GFwdToGuidanceExec();
-
-		/**
-		 * \brief 
-		 */
-		void	FFwdToGuidanceTCExec();
 
 	};
 

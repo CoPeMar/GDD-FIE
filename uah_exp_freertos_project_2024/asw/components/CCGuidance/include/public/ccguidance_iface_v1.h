@@ -219,6 +219,8 @@ public:
 
 
 
+		//!Variables
+		CDTMList &VCurrentTMList;
 
 
 		// Pools *************************************************
@@ -233,6 +235,7 @@ public:
 
 		//!Constructor
 		EDROOM_CTX_Top_0 (CCGuidance &act,
+				CDTMList & EDROOMpVarVCurrentTMList,
 				CEDROOMPOOLCDTMList & EDROOMpPoolCDTMList );
 
 		//!Copy constructor
@@ -266,6 +269,11 @@ public:
 		/**
 		 * \brief  
 		 */
+		void	FDoGuidance();
+
+		/**
+		 * \brief  
+		 */
 		void	FExecGuidanceTC();
 
 		/**
@@ -277,11 +285,6 @@ public:
 		 * \brief  
 		 */
 		void	FInvokeTxTMList();
-
-		/**
-		 * \brief 
-		 */
-		void	FDoGuidance();
 
 	};
 
@@ -305,6 +308,8 @@ public:
 		//!next state identifier
 		EDROOM_CTX_Top_0::TEDROOMStateID edroomNextState;
 
+		//!Variables
+		CDTMList VCurrentTMList;
 
 
 		// Pools**************************************************

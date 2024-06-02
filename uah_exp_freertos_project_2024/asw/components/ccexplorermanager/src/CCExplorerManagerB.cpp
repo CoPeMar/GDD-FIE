@@ -120,6 +120,36 @@ void	CCExplorerManager::EDROOM_CTX_Top_0::FFwdToBKGTCExec()
 
 
 
+void	CCExplorerManager::EDROOM_CTX_Top_0::FFwdToGuidanceExec()
+
+{
+   //Allocate data from pool
+  CDTCHandler * pSGuidance_Data = EDROOMPoolCDTCHandler.AllocData();
+	
+		// Complete Data 
+	
+	*pSGuidance_Data=VCurrentTC;
+   //Send message 
+   GuidanceCtrl.send(SGuidance,pSGuidance_Data,&EDROOMPoolCDTCHandler); 
+}
+
+
+
+void	CCExplorerManager::EDROOM_CTX_Top_0::FFwdToGuidanceTCExec()
+
+{
+   //Allocate data from pool
+  CDTCHandler * pSGuidance_Data = EDROOMPoolCDTCHandler.AllocData();
+	
+		// Complete Data 
+	
+	*pSGuidance_Data=VCurrentTC;
+   //Send message 
+   GuidanceCtrl.send(SGuidance,pSGuidance_Data,&EDROOMPoolCDTCHandler); 
+}
+
+
+
 void	CCExplorerManager::EDROOM_CTX_Top_0::FGetEvAction()
 
 {
@@ -237,6 +267,16 @@ bool	CCExplorerManager::EDROOM_CTX_Top_0::GFwdToBKGTCExec()
 
 
 
+bool	CCExplorerManager::EDROOM_CTX_Top_0::GFwdToGuidanceExec()
+
+{
+
+return VCurrentTC.IsGuidanceTC();
+
+}
+
+
+
 bool	CCExplorerManager::EDROOM_CTX_Top_0::GFwdToHK_FDIR()
 
 {
@@ -253,46 +293,6 @@ bool	CCExplorerManager::EDROOM_CTX_Top_0::GToReboot()
 
 return VCurrentTC.IsRebootTC();
 
-}
-
-
-
-void	CCExplorerManager::EDROOM_CTX_Top_0::FFwdToGuidanceExec()
-
-{
-   //Allocate data from pool
-  CDTCHandler * pSGuidance_Data = EDROOMPoolCDTCHandler.AllocData();
-	
-		// Complete Data 
-	
-	*pSGuidance_Data=VCurrentTC;
-   //Send message 
-   GuidanceCtrl.send(SGuidance,pSGuidance_Data,&EDROOMPoolCDTCHandler); 
-}
-
-
-
-bool	CCExplorerManager::EDROOM_CTX_Top_0::GFwdToGuidanceExec()
-
-{
-
-return VCurrentTC.IsGuidanceTC();
-
-}
-
-
-
-void	CCExplorerManager::EDROOM_CTX_Top_0::FFwdToGuidanceTCExec()
-
-{
-   //Allocate data from pool
-  CDTCHandler * pSGuidance_Data = EDROOMPoolCDTCHandler.AllocData();
-	
-		// Complete Data 
-	
-	*pSGuidance_Data=VCurrentTC;
-   //Send message 
-   GuidanceCtrl.send(SGuidance,pSGuidance_Data,&EDROOMPoolCDTCHandler); 
 }
 
 
