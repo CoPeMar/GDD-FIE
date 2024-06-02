@@ -11,6 +11,7 @@
 	// CONSTRUCTORS***********************************************
 
 CCGuidance::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(CCGuidance &act,
+	 CDTMList & EDROOMpVarVCurrentTMList,
 	 CEDROOMPOOLCDTMList & EDROOMpPoolCDTMList ):
 
 	EDROOMcomponent(act),
@@ -19,6 +20,7 @@ CCGuidance::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(CCGuidance &act,
 	GuidanceCtrl(EDROOMcomponent.GuidanceCtrl),
 	TMChannelCtrl(EDROOMcomponent.TMChannelCtrl),
 	GuidancePeriod(EDROOMcomponent.GuidancePeriod),
+	VCurrentTMList(EDROOMpVarVCurrentTMList),
 	EDROOMPoolCDTMList(EDROOMpPoolCDTMList)
 {
 }
@@ -31,6 +33,7 @@ CCGuidance::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(EDROOM_CTX_Top_0 &context):
 	GuidanceCtrl(context.GuidanceCtrl),
 	TMChannelCtrl(context.TMChannelCtrl),
 	GuidancePeriod(context.GuidancePeriod),
+	VCurrentTMList(context.VCurrentTMList),
 	EDROOMPoolCDTMList(context.EDROOMPoolCDTMList )
 {
 
@@ -61,6 +64,21 @@ bool CCGuidance::EDROOM_CTX_Top_0::EDROOMSearchContextTrans(
 }
 
 	// User-defined Functions   ****************************
+
+void	CCGuidance::EDROOM_CTX_Top_0::FDoGuidance()
+
+{
+   //Define absolute time
+  Pr_Time time;
+VNextTimeout+= Pr_Time(0,100); // Add X sec + Y microsec 
+time=VNextTimeout; 
+ 
+PUSService129::GuidanceControl();
+   //Program absolute timer 
+   GuidancePeriod.InformAt( time ); 
+}
+
+
 
 void	CCGuidance::EDROOM_CTX_Top_0::FExecGuidanceTC()
 
@@ -106,21 +124,6 @@ void	CCGuidance::EDROOM_CTX_Top_0::FInvokeTxTMList()
 
 
 
-void	CCGuidance::EDROOM_CTX_Top_0::FDoGuidance()
-
-{
-   //Define absolute time
-  Pr_Time time;
-VNextTimeout+= Pr_Time(0,100); // Add X sec + Y microsec 
-time=VNextTimeout; 
-
-PUSService129::GuidanceControl();
-   //Program absolute timer 
-   GuidancePeriod.InformAt( time ); 
-}
-
-
-
 	//********************************** Pools *************************************
 
 	//CEDROOMPOOLCDTMList
@@ -152,6 +155,7 @@ CDTMList *	CCGuidance::EDROOM_CTX_Top_0::CEDROOMPOOLCDTMList::AllocData()
 CCGuidance::EDROOM_SUB_Top_0::EDROOM_SUB_Top_0 (CCGuidance&act
 	,CEDROOMMemory *pEDROOMMemory):
 		EDROOM_CTX_Top_0(act,
+			VCurrentTMList,
 			EDROOMPoolCDTMList),
 		EDROOMPoolCDTMList(
 			10, pEDROOMMemory->poolCDTMList,
