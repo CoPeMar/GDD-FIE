@@ -82,7 +82,7 @@ void	CCGuidance::EDROOM_CTX_Top_0::FGuidanceInit()
    //Define absolute time
   Pr_Time time;
 time.GetTime(); // Get current monotonic time   
-time+=Pr_Time(0,100000); // Add X sec + Y microsec    
+time+=Pr_Time(0,100); // Add X sec + Y microsec    
 VNextTimeout=time;
    //Program absolute timer 
    GuidancePeriod.InformAt( time ); 
@@ -111,7 +111,7 @@ void	CCGuidance::EDROOM_CTX_Top_0::FDoGuidance()
 {
    //Define absolute time
   Pr_Time time;
-VNextTimeout+= Pr_Time(0,100000); // Add X sec + Y microsec 
+VNextTimeout+= Pr_Time(0,100); // Add X sec + Y microsec 
 time=VNextTimeout; 
 
 PUSService129::GuidanceControl();
