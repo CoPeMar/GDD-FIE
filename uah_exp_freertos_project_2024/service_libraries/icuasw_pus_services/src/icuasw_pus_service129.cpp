@@ -44,12 +44,18 @@ void PUSService129::Exec129_1TC(CDTCHandler &tcHandler, CDTMList &tmList) {
 	//TODO Fixed
 	sCVx = tcHandler.GetNextFloat(); //El primer valor es CVx
 	sCVy = tcHandler.GetNextFloat(); //El siguiente valor es CVy
+
+	PUSService1::BuildTM_1_7(tcHandler, tmList);
+
 }
 
 void PUSService129::Exec129_2TC(CDTCHandler &tcHandler, CDTMList &tmList) {
 	//TODO Fixed
 	sKpx = tcHandler.GetNextFloat(); //El primer valor es Kpx
 	sKpy = tcHandler.GetNextFloat(); //El siguiente valor es Kpy
+
+	PUSService1::BuildTM_1_7(tcHandler, tmList);
+
 }
 
 const float ActuatorMAX_X_Y_Newtons = 0.100; //100 MiliNewtons
