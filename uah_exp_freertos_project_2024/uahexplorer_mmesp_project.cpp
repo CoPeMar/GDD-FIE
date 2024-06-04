@@ -13,7 +13,7 @@
 #include <public/cctm_channelctrl_iface_v1.h>
 #include <public/cchk_fdirmng_iface_v1.h>
 #include <public/ccbkgtcexec_iface_v1.h>
-#include <public/ccguidance_iface_v1.h>
+#include "../../../components/CCGuidance/include/public/ccguidance_iface_v1.h"
  
 #ifdef CONFIG_EDROOMBP_DEPLOYMENT_NEED_TASK
  
